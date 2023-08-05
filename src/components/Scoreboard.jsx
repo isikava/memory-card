@@ -1,3 +1,5 @@
-export const Scoreboard = () => {
-  return <div>Scoreboard</div>;
+import { Box } from '@chakra-ui/react';
+
+export const Scoreboard = ({ score }) => {
+  return <Box>Current score: {score}</Box>;
 };
