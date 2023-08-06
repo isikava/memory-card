@@ -1,5 +1,11 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Text } from '@chakra-ui/react';
 
 export const Scoreboard = ({ score }) => {
-  return <Box>Current score: {score}</Box>;
+  return (
+    <Box mb={4}>
+      <Text as='b' fontSize='2xl'>
+        SCORE: {score}{' '}
+      </Text>
+    </Box>
+  );
 };

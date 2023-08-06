@@ -1,61 +1,23 @@
-import { Box, Stack, Image, Grid, Button, Text } from '@chakra-ui/react';
-import { Container } from './common/Container';
+import { Box, Container, Grid, Button, Spinner, Text } from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
-import { getPokemons } from '../api/fetchPokemon';
 import { Scoreboard } from './Scoreboard';
-import { Card } from './Card';
-
-const STATUS = {
-  START: 'start',
-  PLAYING: 'playing',
-  WIN: 'win',
-  LOSE: 'lose',
-};
-
-const POKEMONS = [
-  'pikachu',
-  'bulbasaur',
-  'squirtle',
-  'charizard',
-  'jigglypuff',
-];
-
-const DATA = [
-  {
-    name: 'pikachu',
-    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png',
-  },
-  {
-    name: 'bulbasaur',
-    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png',
-  },
-  {
-    name: 'squirtle',
-    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png',
-  },
-  {
-    name: 'charizard',
-    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/6.png',
-  },
-  {
-    name: 'jigglypuff',
-    img: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/39.png',
-  },
-];
+import { PokemonCard } from './PokemonCard';
+import { StartScreen } from './StartScreen';
+import { GameoverModal } from './GameoverModal';
+import { STATUS, POKEMONS, DATA } from '../constants';
+import { getPokemons } from '../api';
 
 export const Main = () => {
   const [status, setStatus] = useState(STATUS.START);
   const [score, setScore] = useState(0);
-  const [pokemons, setPokemons] = useState(DATA);
-  const [error, setError] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
 
-  console.log(status);
+  const [pokemons, setPokemons] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const visitedRef = useRef({});
 
   const isWin = score >= 5;
-
   if (isWin && status !== STATUS.WIN) {
     setStatus(STATUS.WIN);
   }
@@ -65,7 +27,6 @@ export const Main = () => {
       setIsLoading(true);
       try {
         const data = await getPokemons(POKEMONS);
-        console.log(data);
         setPokemons(data);
       } catch (err) {
         setError(err);
@@ -74,7 +35,7 @@ export const Main = () => {
       }
     };
 
-    // getPokes();
+    getPokes();
   }, []);
 
   const shufflePokemons = () => {
@@ -101,31 +62,23 @@ export const Main = () => {
 
   const handlePlay = (name) => {
     if (status !== STATUS.PLAYING) return;
-    // if (isWin || status === STATUS.LOSE) return;
 
     // if the card was visited
     if (visitedRef.current[name]) {
       // lose, end game
-      console.log('visited');
       stopGame();
     } else {
       // shuffle cards
       visitedRef.current[name] = true;
-      console.log(visitedRef.current);
       shufflePokemons();
       setScore(score + 1);
     }
   };
 
   return (
-    <Box as='main'>
-      <Container>
-        {status === STATUS.START && (
-          <Box>
-            <Text>Start the game?</Text>
-            <Button onClick={startGame}>Start</Button>
-          </Box>
-        )}
+    <Box as='main' p={4}>
+      <Container maxW='1200px' align='center'>
+        {status === STATUS.START && <StartScreen onStart={startGame} />}
 
         {status !== STATUS.START && (
           <>
@@ -135,27 +88,23 @@ export const Main = () => {
               gap={6}
               mb={4}
             >
+              {isLoading && <Spinner />}
+              {error && <Text> {error} </Text>}
               {pokemons.length > 0 &&
                 pokemons.map((p) => (
-                  <Card
+                  <PokemonCard
                     key={p.name}
                     pokemon={p}
                     onClick={() => handlePlay(p.name)}
                   />
                 ))}
             </Grid>
-
-            <Box>
-              {status === STATUS.WIN && <Text>Its a Win! </Text>}
-              {status === STATUS.LOSE && <Text>Lost... </Text>}
-
-              <Button onClick={startGame}>Restart</Button>
-            </Box>
+            <Button onClick={startGame}>Restart</Button>
           </>
         )}
-
-        {isLoading && <div>Loading...</div>}
-        {error && <Box> {error} </Box>}
+        {(status === STATUS.WIN || status === STATUS.LOSE) && (
+          <GameoverModal onRestart={startGame} score={score} status={status} />
+        )}
       </Container>
     </Box>
   );
