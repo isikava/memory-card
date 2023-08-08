@@ -4,8 +4,8 @@ import { Scoreboard } from './Scoreboard';
 import { PokemonCard } from './PokemonCard';
 import { StartScreen } from './StartScreen';
 import { GameoverModal } from './GameoverModal';
-import { STATUS, POKEMONS, DATA } from '../constants';
-import { getPokemons } from '../api';
+import { STATUS, POKEMONS } from '../constants';
+import { api } from '../api';
 
 export const Main = () => {
   const [status, setStatus] = useState(STATUS.START);
@@ -23,10 +23,10 @@ export const Main = () => {
   }
 
   useEffect(() => {
-    const getPokes = async () => {
+    const getPokemons = async () => {
       setIsLoading(true);
       try {
-        const data = await getPokemons(POKEMONS);
+        const data = await api.getPokemons(POKEMONS);
         setPokemons(data);
       } catch (err) {
         setError(err);
@@ -35,7 +35,7 @@ export const Main = () => {
       }
     };
 
-    getPokes();
+    getPokemons();
   }, []);
 
   const shufflePokemons = () => {

@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-const api = axios.create({
+const instance = axios.create({
   baseURL: 'https://pokeapi.co/api/v2/pokemon/',
 });
 
-export const getPokemon = async (query) => {
+const getPokemon = async (query) => {
   try {
-    const res = await api.get(query);
+    const res = await instance.get(query);
     const { data } = res;
     const pokemon = {
       name: data.name,
@@ -19,7 +19,12 @@ export const getPokemon = async (query) => {
   }
 };
 
-export const getPokemons = async (names) => {
+const getPokemons = async (names) => {
   const requests = names.map((name) => getPokemon(name));
   return Promise.all(requests);
+};
+
+export const api = {
+  getPokemon,
+  getPokemons,
 };
