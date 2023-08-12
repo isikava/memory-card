@@ -9,9 +9,14 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useState } from 'react';
-import { STATUS } from '../constants';
 
-export const GameoverModal = ({ status, score, onRestart }) => {
+type Props = {
+  status: Status;
+  score: number;
+  onRestart: () => void;
+};
+
+export const GameoverModal = ({ status, score, onRestart }: Props) => {
   const [isOpen, setIsOpen] = useState(true);
 
   const onClose = () => {
@@ -23,7 +28,7 @@ export const GameoverModal = ({ status, score, onRestart }) => {
       <ModalOverlay />
       <ModalContent alignItems='center' fontSize='2xl'>
         <ModalHeader fontSize='3xl'>
-          {status === STATUS.WIN ? 'You win!' : 'Game Over!'}
+          {status === 'win' ? 'You win!' : 'Game Over!'}
         </ModalHeader>
         <ModalBody>
           <Text>Your final score is {score}</Text>
