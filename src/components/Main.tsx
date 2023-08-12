@@ -4,22 +4,23 @@ import { Scoreboard } from './Scoreboard';
 import { PokemonCard } from './PokemonCard';
 import { StartScreen } from './StartScreen';
 import { GameoverModal } from './GameoverModal';
-import { STATUS, POKEMONS } from '../constants';
+import { POKEMONS } from '../constants';
+//@ts-ignore
 import { api } from '../api';
 
 export const Main = () => {
-  const [status, setStatus] = useState(STATUS.START);
+  const [status, setStatus] = useState<Status>('start');
   const [score, setScore] = useState(0);
 
-  const [pokemons, setPokemons] = useState([]);
+  const [pokemons, setPokemons] = useState<IPokemon[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const visitedRef = useRef({});
+  const visitedRef = useRef<Record<string, boolean>>({});
 
   const isWin = score >= 5;
-  if (isWin && status !== STATUS.WIN) {
-    setStatus(STATUS.WIN);
+  if (isWin && status !== 'win') {
+    setStatus('win');
   }
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export const Main = () => {
         const data = await api.getPokemons(POKEMONS);
         setPokemons(data);
       } catch (err) {
-        setError(err);
+        setError(err as string);
       } finally {
         setIsLoading(false);
       }
@@ -50,18 +51,18 @@ export const Main = () => {
   };
 
   const startGame = () => {
-    setStatus(STATUS.PLAYING);
+    setStatus('playing');
     setScore(0);
     visitedRef.current = {};
     shufflePokemons();
   };
 
   const stopGame = () => {
-    setStatus(STATUS.LOSE);
+    setStatus('lose');
   };
 
-  const handlePlay = (name) => {
-    if (status !== STATUS.PLAYING) return;
+  const handlePlay = (name: string) => {
+    if (status !== 'playing') return;
 
     // if the card was visited
     if (visitedRef.current[name]) {
@@ -77,10 +78,10 @@ export const Main = () => {
 
   return (
     <Box as='main' p={4}>
-      <Container maxW='1200px' align='center'>
-        {status === STATUS.START && <StartScreen onStart={startGame} />}
+      <Container maxW='1200px'>
+        {status === 'start' && <StartScreen onStart={startGame} />}
 
-        {status !== STATUS.START && (
+        {status !== 'start' && (
           <>
             <Scoreboard score={score} />
             <Grid
@@ -102,7 +103,7 @@ export const Main = () => {
             <Button onClick={startGame}>Restart</Button>
           </>
         )}
-        {(status === STATUS.WIN || status === STATUS.LOSE) && (
+        {(status === 'win' || status === 'lose') && (
           <GameoverModal onRestart={startGame} score={score} status={status} />
         )}
       </Container>
