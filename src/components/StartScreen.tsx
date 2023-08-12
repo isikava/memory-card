@@ -1,6 +1,10 @@
 import { Box, Text, Button } from '@chakra-ui/react';
 
-export const StartScreen = ({ onStart }) => {
+type Props = {
+  onStart: () => void;
+};
+
+export const StartScreen = ({ onStart }: Props) => {
   return (
     <Box>
       <Text fontSize='2xl' mb={4}>

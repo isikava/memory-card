@@ -1,9 +1,14 @@
 import { Card, CardBody, Image, Heading } from '@chakra-ui/react';
 
-export const PokemonCard = ({ pokemon, onClick }) => {
+type Props = {
+  pokemon: IPokemon;
+  onClick: () => void;
+};
+
+export const PokemonCard = ({ pokemon, onClick }: Props) => {
   return (
     <Card cursor='pointer' onClick={onClick}>
-      <CardBody align='center'>
+      <CardBody>
         <Image src={pokemon.img} w={['100%', '200px']} objectFit='cover' />
         <Heading size='md'>{pokemon.name}</Heading>
       </CardBody>
