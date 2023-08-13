@@ -1,7 +1,14 @@
-import { Box, Container, Grid, Button, Spinner, Text } from '@chakra-ui/react';
+import {
+  Box,
+  Container,
+  Button,
+  Spinner,
+  Text,
+  VStack,
+} from '@chakra-ui/react';
 import { useEffect, useRef, useState } from 'react';
+import { PokemonsList } from './PokemonsList';
 import { Scoreboard } from './Scoreboard';
-import { PokemonCard } from './PokemonCard';
 import { StartScreen } from './StartScreen';
 import { GameoverModal } from './GameoverModal';
 import { POKEMONS } from '../constants';
@@ -14,8 +21,9 @@ export const Main = () => {
 
   const [pokemons, setPokemons] = useState<IPokemon[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
+  // visited card map
   const visitedRef = useRef<Record<string, boolean>>({});
 
   const isWin = score >= 5;
@@ -79,33 +87,31 @@ export const Main = () => {
   return (
     <Box as='main' p={4}>
       <Container maxW='1200px'>
-        {status === 'start' && <StartScreen onStart={startGame} />}
+        <VStack align='center'>
+          {status === 'start' && <StartScreen onStart={startGame} />}
 
-        {status !== 'start' && (
-          <>
-            <Scoreboard score={score} />
-            <Grid
-              templateColumns='repeat(auto-fit, minmax(200px, 1fr))'
-              gap={6}
-              mb={4}
-            >
+          {status !== 'start' && (
+            <>
               {isLoading && <Spinner />}
-              {error && <Text> {error} </Text>}
-              {pokemons.length > 0 &&
-                pokemons.map((p) => (
-                  <PokemonCard
-                    key={p.name}
-                    pokemon={p}
-                    onClick={() => handlePlay(p.name)}
-                  />
-                ))}
-            </Grid>
-            <Button onClick={startGame}>Restart</Button>
-          </>
-        )}
-        {(status === 'win' || status === 'lose') && (
-          <GameoverModal onRestart={startGame} score={score} status={status} />
-        )}
+              {error && <Text>{error}</Text>}
+              {!isLoading && !error && (
+                <>
+                  <Scoreboard score={score} />
+                  <PokemonsList pokemons={pokemons} onPlay={handlePlay} />
+                  <Button onClick={startGame}>Restart</Button>
+                </>
+              )}
+            </>
+          )}
+
+          {(status === 'win' || status === 'lose') && (
+            <GameoverModal
+              onRestart={startGame}
+              score={score}
+              status={status}
+            />
+          )}
+        </VStack>
       </Container>
     </Box>
   );
