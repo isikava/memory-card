@@ -12,7 +12,6 @@ import { Scoreboard } from './Scoreboard';
 import { StartScreen } from './StartScreen';
 import { GameoverModal } from './GameoverModal';
 import { POKEMONS } from '../constants';
-//@ts-ignore
 import { api } from '../api';
 
 export const Main = () => {

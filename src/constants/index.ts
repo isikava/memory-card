@@ -1,10 +1,3 @@
-export const STATUS = {
-  START: 'start',
-  PLAYING: 'playing',
-  WIN: 'win',
-  LOSE: 'lose',
-};
-
 export const POKEMONS = [
   'pikachu',
   'bulbasaur',
